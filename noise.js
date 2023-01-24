@@ -33,8 +33,13 @@ function PerlinNoise (count, seeds, nOctaves) {
     return perlin;
 }
 
+function FadeFunction (t) {
+    return 6 * Math.pow(t, 5) - 15 * Math.pow(t, 4) + 10 * Math.pow(t, 3);
+}
+
 export {
     SeedGenerator,
     LinearInterpolation,
-    PerlinNoise
+    PerlinNoise,
+    FadeFunction
 }

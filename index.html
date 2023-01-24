@@ -21,17 +21,48 @@
         flex-direction: column;
     }
 
-    #scene, #seeds {
+    div {
+      position: relative;
+    }
+
+    div::before {
+      color: white;
+      font-size: 40px;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateX(-100%);
+    }
+
+    #scene, #seeds, #scene2 {
         background-color: black;
         width: 800px;
-        height: 40vh;
+        height: 30vh;
         margin: 5px;
-        position: relative;
+    }
+
+    #seeds-canvas::before {
+      content: "Raw Points =>";
+    }
+
+    #scene-canvas::before {
+      content: "Linear Interpolation Points =>";
+    }
+
+    #scene2-canvas::before {
+      content: "Fade Function Points =>";
     }
   </style>
   <body>
-    <canvas id="seeds"></canvas>
-    <canvas id="scene"></canvas>
+    <div id="seeds-canvas">
+      <canvas id="seeds"></canvas>
+    </div>
+    <div id="scene-canvas">
+      <canvas id="scene"></canvas>
+    </div>
+    <div id="scene2-canvas">
+      <canvas id="scene2"></canvas>
+    </div>
 	  <script type="module" src="script.js"></script>
   </body>
 </html>
