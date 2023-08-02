@@ -37,14 +37,16 @@ class SeedsGraph {
         this.seeds = [];
         this.seedCount = seedCount;
         
-        let generator = new Generator(50, 100, this.height);
+        let generator = new Generator(100, 200);
         this.seeds = generator.PseudoRandomNumberGenerator(this.width);
         this.LERPPoints = [];
         this.fadedPoints = [];
     }
 
     create () {
-        this.#draw(seedsCtx, this.seeds, true);
+        console.log(this.seeds);
+
+        this.draw(seedsCtx, this.seeds, true);
     }
 
     drawInterpolationPoints () {
@@ -55,16 +57,16 @@ class SeedsGraph {
             return p2;
         });
 
-        this.#draw(scene, this.LERPPoints, false);
+        this.draw(scene, this.LERPPoints, false);
     }
 
     drawFadedPoints () {
-        this.fadedPoints = this.LERPPoints.map(point => FadeFunction(point / 100) + this.height / 2);
+        this.fadedPoints = this.seeds.map(point => FadeFunction(point / 100) + this.height / 2);
 
-        this.#draw(scene2, this.fadedPoints, false);
+        this.draw(scene2, this.fadedPoints, false);
     }
 
-    #draw(panel, points, pointsShow) {
+    draw(panel, points, pointsShow) {
         panel.strokeStyle = `red`;
         panel.fillStyle = `red`;
         panel.beginPath();
@@ -72,7 +74,7 @@ class SeedsGraph {
 
         let stepSize = this.width / (points.length - 1);
         points.forEach((noise, index) => {
-            panel.lineTo(Math.floor(stepSize * index), noise);
+            panel.lineTo(Math.floor(stepSize * index), noise + this.height >> 1);
             if (pointsShow) {
                 scene.arc(stepSize * index, (this.height >> 1) + ((Math.max(...this.LERPPoints) * this.height) >> 1) - noise * this.height, 3, 0, Math.PI * 2);
             }
@@ -81,11 +83,33 @@ class SeedsGraph {
     }
 }
 
-const seedsGraph = new SeedsGraph(20);
-seedsGraph.create();
-seedsGraph.drawInterpolationPoints();
-seedsGraph.drawFadedPoints(); // Smoothly
+// function loop() {
+//     seedsCtx.fillStyle = 'rgba(0, 0, 0, .5)';
+//     scene2.fillStyle = 'rgba(0, 0, 0, .5)';
+//     scene2.fillRect(0, 0, scene2Canvas.width, scene2Canvas.height);
+//     seedsCtx.fillRect(0, 0, seedsCanvas.width, seedsCanvas.height);
+//     const seedsGraph = new SeedsGraph(20);
+//     seedsGraph.create();
+//     seedsGraph.drawFadedPoints(); // Smoothly
+//     // requestAnimationFrame(loop);
+// }
 
-let perlinNoise = PerlinNoise(12, seedsGraph.seeds, 4)
+// loop();
+
+seedsCtx.fillStyle = 'rgba(0, 0, 0, .5)';
+    scene2.fillStyle = 'rgba(0, 0, 0, .5)';
+    scene2.fillRect(0, 0, scene2Canvas.width, scene2Canvas.height);
+    seedsCtx.fillRect(0, 0, seedsCanvas.width, seedsCanvas.height);
+    const seedsGraph = new SeedsGraph(20);
+    seedsGraph.create();
+    seedsGraph.drawFadedPoints(); // Smoothly
+
+    // seedsGraph.drawInterpolationPoints();
+    
+    let perlinNoise = PerlinNoise(seedsGraph.seeds, 4, .5);
+console.log()
+seedsGraph.draw(scene, perlinNoise, false);
+
+
 
 

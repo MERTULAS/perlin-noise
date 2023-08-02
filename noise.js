@@ -27,11 +27,11 @@ class Generator {
             if (xPoint % this.waveLength === 0) {
                 firstPoint = secondPoint;
                 secondPoint = rand();
-                yPoint = (this.height / 2) + firstPoint * this.amplitude;
+                yPoint = firstPoint * this.amplitude;
             }
 
             else {
-                yPoint = (this.height / 2)  + this.INTERPOLATION(firstPoint, secondPoint, (xPoint % this.waveLength) / this.waveLength) * this.amplitude;
+                yPoint = this.INTERPOLATION(firstPoint, secondPoint, (xPoint % this.waveLength) / this.waveLength) * this.amplitude;
             }
             
             result.push(yPoint);
@@ -56,28 +56,19 @@ function CosineInterpolation(p1, p2, t) {
     return (1 - f) * p1 + f * p2;
 }
 
-function PerlinNoise (count, seeds, nOctaves) {
-    const LERP = LinearInterpolation;
-    const perlin = [];
+function PerlinNoise (seeds, nOctaves, amplitude, interpolation = 'lerp') {
+    const INTERPOLATION = interpolation === 'lerp' ? LinearInterpolation : CosineInterpolation;
+    let perlin = seeds;
 
-    for (let x = 0; x < count; x++) {
-        let noise = 0;
-        let scale = 1;
-        let scaleAcc = 0;
-
-        for (let j = 0; j < nOctaves; j++) {
-            let pitch = count >> j;
-            let sample1 = (x / pitch) * pitch;
-            let sample2 = (sample1 + pitch ) % count;
-
-            let blend = (x - sample1) / pitch;
-            let sample = LERP(seeds[sample1], seeds[sample2], blend);
-            noise += sample * scale;
-            scaleAcc += scale;
-            scale >>= 1;
+    let totalSeedCount = seeds.length;
+    let tempOctave = nOctaves;
+    let coefficient = 1;
+    while (tempOctave > 0) {
+        for (let octaveStep = 0; octaveStep <= totalSeedCount; octaveStep+= tempOctave) {
+            perlin[octaveStep] += amplitude * coefficient * seeds[octaveStep];
         }
-
-        perlin[x] = noise / scaleAcc;
+        tempOctave >>= 1;
+        coefficient /= 2;
     }
 
     return perlin;
